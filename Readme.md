@@ -1,0 +1,1 @@
+A chat app that is used by user to communicate with other person or group of person in group chat.
