@@ -82,8 +82,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        sameSite: "lax",
-        secure: false,
+        secure: true,
+        sameSite: "None",
         maxAge: 7 * 24 * 60 * 60 * 1000
     };
 
@@ -98,7 +98,8 @@ const loginUser = asyncHandler(async (req, res) => {
 const logOutUser = asyncHandler(async (req, res) => {
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: "None"
     }
 
     return res
@@ -107,18 +108,18 @@ const logOutUser = asyncHandler(async (req, res) => {
         .json(new ApiRes(200, {}, "User logged Out"))
 })
 
-const getAllUsers = asyncHandler(async(req, res) => {
+const getAllUsers = asyncHandler(async (req, res) => {
     const users = await User.find().select("-password");
 
     return res.
-            status(201)
-            .json(
-                new ApiRes(
-                    200,
-                    users,
-                    "All users fetched successfully"
-                )
+        status(201)
+        .json(
+            new ApiRes(
+                200,
+                users,
+                "All users fetched successfully"
             )
+        )
 })
 
 export {

@@ -13,7 +13,6 @@ dotenv.config({
 
 const app = express();
 
-// ✅ CORS
 app.use(
     cors({
         origin: process.env.CLIENT_URL,
@@ -24,7 +23,6 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ ROUTES
 import userRouter from "./routes/user.route.js";
 import chatRouter from "./routes/chat.route.js";
 import massageRouter from "./routes/massage.route.js";
@@ -36,10 +34,8 @@ app.use("/api/massage", massageRouter);
 app.use("/api/upload", uploadRouter);
 app.get("/", (req, res) => { res.send("Backend is running 🚀"); });
 
-// ✅ HTTP SERVER
 const server = http.createServer(app);
 
-// ✅ SOCKET SERVER
 const io = new Server(server, {
     cors: {
         origin: process.env.CLIENT_URL,
@@ -47,7 +43,6 @@ const io = new Server(server, {
     },
 });
 
-// ✅ ONLINE USERS MAP
 const onlineUsers = new Map();
 
 // ✅ SOCKET CONNECTION
@@ -69,41 +64,35 @@ io.on("connection", (socket) => {
             onlineUsers.set(userId, [socket.id]);
         }
 
-        // ✅ JOIN PERSONAL ROOM
+    
         socket.join(userId.toString());
 
         socket.emit("connected");
 
-        // ✅ SEND ONLINE USERS
         io.emit(
             "online users",
             Array.from(onlineUsers.keys())
         );
     });
 
-    // ✅ JOIN CHAT ROOM
     socket.on("join chat", (chatId) => {
         socket.join(chatId);
         console.log("Joined chat:", chatId);
     });
 
-    // ✅ LEAVE CHAT ROOM
     socket.on("leave chat", (chatId) => {
         socket.leave(chatId);
         console.log("Left chat:", chatId);
     });
 
-    // ✅ TYPING
     socket.on("typing", (chatId) => {
         socket.to(chatId).emit("typing");
     });
 
-    // ✅ STOP TYPING
     socket.on("stop typing", (chatId) => {
         socket.to(chatId).emit("stop typing");
     });
 
-    // ✅ NEW MESSAGE
     socket.on("new message", (message) => {
         const chat = message.chat;
 
@@ -115,7 +104,6 @@ io.on("connection", (socket) => {
                     ? user._id
                     : user;
 
-            // ✅ SKIP SENDER
             if (
                 userId.toString() ===
                 message.sender._id.toString()
@@ -123,14 +111,12 @@ io.on("connection", (socket) => {
                 return;
             }
 
-            // ✅ SEND MESSAGE
             socket
                 .to(userId.toString())
                 .emit("message received", message);
         });
     });
 
-    // ✅ DISCONNECT
     socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
 
@@ -140,7 +126,6 @@ io.on("connection", (socket) => {
             if (index !== -1) {
                 sockets.splice(index, 1);
 
-                // ✅ REMOVE USER IF NO SOCKETS LEFT
                 if (sockets.length === 0) {
                     onlineUsers.delete(userId);
                 }
