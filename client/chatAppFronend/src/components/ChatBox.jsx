@@ -17,55 +17,90 @@ const ChatBox = ({ selectedChat }) => {
 
   // ✅ FIND OTHER USER
   const otherUser = selectedChat?.users?.find(
-    (u) => u._id !== user._id
+    (u) =>
+      u._id.toString() !==
+      user._id.toString()
   );
-
-  // 🔥 SOCKET CONNECTION
+  console.log("CHATBOX RENDERED");
+  console.log("USER:", user);
   useEffect(() => {
-    socketRef.current = io("http://localhost:8000");
+    console.log("SOCKET EFFECT RUNNING");
+    if (!user) {
+      console.log("USER NOT FOUND");
+    }
+    if (!user) return;
 
-    // ✅ SETUP USER
-    socketRef.current.emit("setup", user);
+    socketRef.current = io(
+      import.meta.env.VITE_API_URL,
+      {
+        withCredentials: true,
+      }
+    );
 
-    // ✅ ONLINE USERS
-    socketRef.current.on("online users", (users) => {
-      setOnlineUsers(users);
+    socketRef.current.on("connect", () => {
+
+      console.log(
+        "SOCKET CONNECTED:",
+        socketRef.current.id
+      );
+
+      // ✅ EMIT ONLY AFTER USER EXISTS
+      socketRef.current.emit(
+        "setup",
+        user
+      );
     });
 
-    // ✅ TYPING EVENTS
-    socketRef.current.on("typing", () => {
-      setTyping(true);
-    });
+    socketRef.current.on(
+      "online users",
+      (users) => {
 
-    socketRef.current.on("stop typing", () => {
-      setTyping(false);
-    });
+        console.log(
+          "ONLINE USERS:",
+          users
+        );
 
-    // ✅ RECEIVE MESSAGE
-    socketRef.current.on("message received", (msg) => {
-      setMessages((prev) => {
-        const exists = prev.find((m) => m._id === msg._id);
+        setOnlineUsers(users);
+      }
+    );
 
-        if (exists) {
-          return prev.map((m) =>
-            m._id === msg._id ? msg : m
+    socketRef.current.on(
+      "typing",
+      () => {
+        setTyping(true);
+      }
+    );
+
+    socketRef.current.on(
+      "stop typing",
+      () => {
+        setTyping(false);
+      }
+    );
+
+    socketRef.current.on(
+      "message received",
+      (msg) => {
+
+        setMessages((prev) => {
+
+          const exists = prev.find(
+            (m) => m._id === msg._id
           );
-        }
 
-        return [...prev, msg];
-      });
-    });
+          if (exists) return prev;
 
-    // ✅ CLEANUP SOCKET EVENTS
+          return [...prev, msg];
+        });
+      }
+    );
+
     return () => {
-      socketRef.current.off("online users");
-      socketRef.current.off("typing");
-      socketRef.current.off("stop typing");
-      socketRef.current.off("message received");
 
       socketRef.current.disconnect();
     };
-  }, []);
+
+  }, [user]);
 
   // 🔥 LOAD MESSAGES
   useEffect(() => {
@@ -97,7 +132,9 @@ const ChatBox = ({ selectedChat }) => {
   const isUserOnline = () => {
     if (!otherUser) return false;
 
-    return onlineUsers.includes(otherUser._id);
+    return onlineUsers.includes(
+      otherUser._id.toString()
+    );
   };
 
   // ✅ NO CHAT SELECTED
@@ -136,19 +173,18 @@ const ChatBox = ({ selectedChat }) => {
           <div className="flex items-center gap-2 text-xs">
 
             <span
-              className={`w-2 h-2 rounded-full ${
-                isUserOnline()
-                  ? "bg-green-500"
-                  : "bg-gray-400"
-              }`}
+              className={`w-2 h-2 rounded-full ${isUserOnline()
+                ? "bg-green-500"
+                : "bg-gray-400"
+                }`}
             ></span>
 
             <span>
               {typing
                 ? "typing..."
                 : isUserOnline()
-                ? "online"
-                : "offline"}
+                  ? "online"
+                  : "offline"}
             </span>
 
           </div>
