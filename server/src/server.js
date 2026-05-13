@@ -34,6 +34,7 @@ app.use("/api/user", userRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/massage", massageRouter);
 app.use("/api/upload", uploadRouter);
+app.get("/", (req, res) => { res.send("Backend is running 🚀"); });
 
 // ✅ HTTP SERVER
 const server = http.createServer(app);
