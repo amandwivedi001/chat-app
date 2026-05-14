@@ -5,16 +5,17 @@ import { ApiErr } from "../../utils/ApiErr.js";
 import { ApiRes } from "../../utils/ApiRes.js";
 
 const sendMassage = asyncHandler(async (req, res) => {
-    const { content, chatId } = req.body;
+    const { content, chatId , image} = req.body;
 
-    if (!content || !chatId) {
+    if ((!content && !image) || !chatId) {
         throw new ApiErr(400, "Invalid data");
     }
 
     let newMassage = await Massage.create({
         sender: req.user._id,
         content: content,
-        chat: chatId
+        image,
+        chat: chatId,
     })
 
     newMassage = await newMassage.populate("sender", "Username email avatar");

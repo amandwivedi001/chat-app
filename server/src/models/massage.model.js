@@ -11,6 +11,11 @@ const massageSchema = Schema({
     trim: true,
   },
 
+  image: {
+    type: String,
+    default: "",
+  },
+
   chat: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Chat",
@@ -18,13 +23,15 @@ const massageSchema = Schema({
 
   deliveredTo: [
     {
-      type: mongoose.Schema.Types.ObjectId, ref: "User"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     }
   ],
 
   seenBy: [
     {
-      type: mongoose.Schema.Types.ObjectId, ref: "User"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     }
   ],
 

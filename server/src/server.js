@@ -45,19 +45,13 @@ const io = new Server(server, {
 
 const onlineUsers = new Map();
 
-// ✅ SOCKET CONNECTION
 io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
 
-    // ✅ SETUP USER
     socket.on("setup", (userdata) => {
         const userId = userdata._id;
 
         socket.userId = userId;
 
-        console.log("Joining user room:", userId);
-
-        // ✅ STORE MULTIPLE SOCKETS
         if (onlineUsers.has(userId)) {
             onlineUsers.get(userId).push(socket.id);
         } else {
@@ -77,12 +71,10 @@ io.on("connection", (socket) => {
 
     socket.on("join chat", (chatId) => {
         socket.join(chatId);
-        console.log("Joined chat:", chatId);
     });
 
     socket.on("leave chat", (chatId) => {
         socket.leave(chatId);
-        console.log("Left chat:", chatId);
     });
 
     socket.on("typing", (chatId) => {
@@ -134,7 +126,6 @@ io.on("connection", (socket) => {
             }
         }
 
-        // ✅ UPDATE ONLINE USERS
         io.emit(
             "online users",
             Array.from(onlineUsers.keys())
@@ -142,7 +133,6 @@ io.on("connection", (socket) => {
     });
 });
 
-// ✅ DATABASE CONNECTION
 connectdb()
     .then(() => {
         const PORT = process.env.PORT || 8000;
