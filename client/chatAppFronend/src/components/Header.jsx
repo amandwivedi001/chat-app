@@ -18,13 +18,11 @@ const Header = () => {
   return (
     <div className="h-15 bg-white border-b flex items-center justify-between px-6 shadow-sm">
 
-      {/* LEFT → LOGO */}
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 bg-blue-500 rounded-full"></div>
         <h1 className="font-bold text-lg">ChatApp</h1>
       </div>
 
-      {/* RIGHT → USER */}
       <div className="flex items-center gap-3">
         <img
           src={user?.avatar || "https://cdn-icons-png.flaticon.com/512/1946/1946429.png"}

@@ -15,7 +15,6 @@ const ChatBox = ({ selectedChat }) => {
 
   const { user } = useAuth();
 
-  // ✅ FIND OTHER USER
   const otherUser = selectedChat?.users?.find(
     (u) =>
       u._id.toString() !==
@@ -44,7 +43,6 @@ const ChatBox = ({ selectedChat }) => {
         socketRef.current.id
       );
 
-      // ✅ EMIT ONLY AFTER USER EXISTS
       socketRef.current.emit(
         "setup",
         user
@@ -102,15 +100,12 @@ const ChatBox = ({ selectedChat }) => {
 
   }, [user]);
 
-  // 🔥 LOAD MESSAGES
   useEffect(() => {
     const loadMessages = async () => {
       if (!selectedChat) return;
 
-      // ✅ LEAVE PREVIOUS ROOM
       socketRef.current.emit("leave chat");
 
-      // ✅ JOIN NEW ROOM
       socketRef.current.emit("join chat", selectedChat._id);
 
       const res = await fetchMessage(selectedChat._id);
@@ -121,14 +116,12 @@ const ChatBox = ({ selectedChat }) => {
     loadMessages();
   }, [selectedChat]);
 
-  // ✅ AUTO SCROLL
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
     });
   }, [messages]);
 
-  // ✅ ONLINE STATUS
   const isUserOnline = () => {
     if (!otherUser) return false;
 
@@ -137,7 +130,6 @@ const ChatBox = ({ selectedChat }) => {
     );
   };
 
-  // ✅ NO CHAT SELECTED
   if (!selectedChat) {
     return (
       <div className="flex h-full items-center justify-center text-gray-500">
@@ -149,7 +141,6 @@ const ChatBox = ({ selectedChat }) => {
   return (
     <div className="flex flex-col h-full">
 
-      {/* HEADER */}
       <div className="h-15 bg-white border-b flex items-center px-4 shadow-sm">
 
         <img
@@ -162,14 +153,12 @@ const ChatBox = ({ selectedChat }) => {
         />
 
         <div className="ml-3">
-          {/* ✅ DYNAMIC USER NAME */}
           <p className="font-semibold text-lg">
             {selectedChat.isGroupChat
               ? selectedChat.chatname
               : otherUser?.Username}
           </p>
 
-          {/* ✅ ONLINE STATUS */}
           <div className="flex items-center gap-2 text-xs">
 
             <span
@@ -191,7 +180,6 @@ const ChatBox = ({ selectedChat }) => {
         </div>
       </div>
 
-      {/* MESSAGES */}
       <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
 
         {messages.map((msg) => (
@@ -204,7 +192,6 @@ const ChatBox = ({ selectedChat }) => {
         <div ref={bottomRef}></div>
       </div>
 
-      {/* INPUT */}
       <MessageInput
         selectedChat={selectedChat}
         setMessages={setMessages}
