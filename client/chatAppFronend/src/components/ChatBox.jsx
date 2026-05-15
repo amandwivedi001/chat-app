@@ -23,7 +23,6 @@ const ChatBox = ({ selectedChat }) => {
   console.log("CHATBOX RENDERED");
   console.log("USER:", user);
   useEffect(() => {
-    console.log("SOCKET EFFECT RUNNING");
     if (!user) {
       console.log("USER NOT FOUND");
     }
@@ -52,11 +51,6 @@ const ChatBox = ({ selectedChat }) => {
     socketRef.current.on(
       "online users",
       (users) => {
-
-        console.log(
-          "ONLINE USERS:",
-          users
-        );
 
         setOnlineUsers(users);
       }

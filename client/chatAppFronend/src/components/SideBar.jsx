@@ -10,7 +10,7 @@ const SideBar = ({ setSelectedChat }) => {
     const [activeTab, setActiveTab] = useState("chats");
 
     useEffect(() => {
-        const loadMessages = async () => {
+        const loadChats = async () => {
             try {
                 const res = await fetchChat();
                 console.log("CHAT DATA:", res);
@@ -19,7 +19,7 @@ const SideBar = ({ setSelectedChat }) => {
                 console.error(err);
             }
         };
-        loadMessages();
+        loadChats();
     }, []);
 
     useEffect(() => {
