@@ -1,25 +1,40 @@
 import cloudinary from "../config/cloudinary.js";
-import {ApiErr} from "../../utils/ApiErr.js"
+import { ApiErr } from "../../utils/ApiErr.js";
 
 const uploadImage = async (req, res) => {
-    try {
-        const file = req.file;
 
-        const result = cloudinary.uploader.upload_stream(
-            {folder: "chat-app"},
-            (error, result) => {
-                if(error){
-                    throw new ApiErr(400, error.message)
+    try {
+
+        if (!req.file) {
+            throw new ApiErr(400, "No image uploaded");
+        }
+
+        cloudinary.uploader.upload_stream(
+            {
+                folder: "chat-app"
+            },
+
+            (error, uploadedImage) => {
+
+                if (error) {
+                    throw new ApiErr(400, error.message);
                 }
 
-                res.json({url : result.secure_url});
-            }
-        )
+                return res.status(200).json({
+                    url: uploadedImage.secure_url
+                });
 
-        result.end(file.buffer);
+            }
+
+        ).end(req.file.buffer);
+
     } catch (error) {
-        throw new ApiErr(500, error.message);
+
+        return res.status(500).json({
+            message: error.message
+        });
+
     }
-}
+};
 
 export default uploadImage;
